@@ -36,3 +36,19 @@ transform = transforms.MFCC(
 mfccs = transform(waveform).to(device)
 model(mfccs)
 ```
+
+# Development environment
+
+```bash
+uv sync
+uv venv --python 3.12 --clear
+source .venv/bin/activate
+```
+
+If running on WSL:
+
+```bash
+cd $(uv pip show torch | grep Location | awk -F ": " '{print $2}')/torch/lib
+rm libhsa-runtime64.so*
+cp /opt/rocm/lib/libhsa-runtime64.so.1.* libhsa-runtime64.so
+```
