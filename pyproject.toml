@@ -3,26 +3,17 @@ name = "swishnet-pytorch"
 version = "0.1.0"
 description = ""
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = "==3.12.*"
 dependencies = [
-    "numpy>=2.2.6",
-    "pytorch-triton-rocm",
     "torch",
+    "pytorch-triton-rocm",
 ]
 
-# For WSL
+[dependency-groups]
+dev = [
+    "pytest",
+]
+
 [tool.uv.sources]
 torch = { url = "https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.2/torch-2.6.0%2Brocm6.4.2.git76481f7c-cp312-cp312-linux_x86_64.whl" }
 pytorch-triton-rocm = { url = "https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.2/pytorch_triton_rocm-3.2.0%2Brocm6.4.2.git7e948ebf-cp312-cp312-linux_x86_64.whl" }
-# torch = [{ index = "pytorch-rocm" }]
-# pytorch-triton-rocm = [{ index = "pytorch-rocm" }]
-
-# For Linux
-#[tool.uv.sources]
-# torch = [{ index = "pytorch-rocm" }]
-# pytorch-triton-rocm = [{ index = "pytorch-rocm" }]
-#
-# [[tool.uv.index]]
-# name = "pytorch-rocm"
-# url = "https://download.pytorch.org/whl/rocm6.4"
-# explicit = true

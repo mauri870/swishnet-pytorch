@@ -12,14 +12,13 @@ class SwishNet(nn.Module):
         self.causal_block1 = CausalBlock(in_channels, width_16)
         self.causal_block2 = CausalBlock(width_16, width_8)
         self.causal_block3 = CausalBlock(width_8, width_8)
-        self.causal_conv4 = CausalGatedConv1D(width_8, width_16, length=3, strides=3)
-        self.causal_conv5 = CausalGatedConv1D(width_8, width_16, length=3, strides=2)
-        self.causal_conv6 = CausalGatedConv1D(width_8, width_16, length=3, strides=2)
-        self.causal_conv7 = CausalGatedConv1D(width_8, width_16, length=3, strides=2)
-        self.causal_conv8 = CausalGatedConv1D(width_8, width_32, length=3, strides=2)
+        self.causal_conv4 = CausalGatedConv1D(width_8, width_16, length=3, dilation=3)
+        self.causal_conv5 = CausalGatedConv1D(width_8, width_16, length=3, dilation=2)
+        self.causal_conv6 = CausalGatedConv1D(width_8, width_16, length=3, dilation=2)
+        self.causal_conv7 = CausalGatedConv1D(width_8, width_16, length=3, dilation=2)
+        self.causal_conv8 = CausalGatedConv1D(width_8, width_32, length=3, dilation=2)
         self.conv_out = nn.Conv1d(width_40, out_channels, kernel_size=1)
         self.global_avg_pool = nn.AdaptiveAvgPool1d(1)
-        self.softmax = nn.Softmax(dim=1)
     
     def forward(self, x) -> torch.Tensor:
         # block 1
@@ -56,13 +55,13 @@ class SwishNet(nn.Module):
         # output
         x = self.conv_out(x)
         x = self.global_avg_pool(x)
-        x = self.softmax(x)
-        
+        x = x.squeeze(-1)
+
         return x
 
 class SwishNetWide(SwishNet):
     def __init__(self, classes):
-        super().__init__(classes, width_multiply=2)
+        super().__init__(out_channels=classes, width_multiply=2)
 
 # NOTE: Copied from https://github.com/pytorch/pytorch/issues/1333#issuecomment-400338207
 class CausalConv1D(torch.nn.Conv1d):
@@ -93,14 +92,10 @@ class CausalConv1D(torch.nn.Conv1d):
         return result
 
 class CausalGatedConv1D(nn.Module):
-    def __init__(self, in_channels, filters=16, length=6, strides=1):
+    def __init__(self, in_channels, filters=16, length=6, dilation=1):
         super().__init__()
-        self.filters = filters
-        self.length = length
-        self.strides = strides
-
-        self.conv1 = CausalConv1D(in_channels=in_channels, out_channels=filters // 2, kernel_size=length, dilation=strides, stride=1)
-        self.conv2 = CausalConv1D(in_channels=in_channels, out_channels=filters // 2, kernel_size=length, dilation=strides, stride=1)
+        self.conv1 = CausalConv1D(in_channels=in_channels, out_channels=filters // 2, kernel_size=length, dilation=dilation, stride=1)
+        self.conv2 = CausalConv1D(in_channels=in_channels, out_channels=filters // 2, kernel_size=length, dilation=dilation, stride=1)
         self.sigmoid = nn.Sigmoid()
         self.tanh = nn.Tanh()
 
