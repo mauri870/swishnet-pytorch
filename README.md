@@ -1,6 +1,6 @@
 # SwishNet
 
-PyTorch implementation of the SwishNet arquitecture.
+PyTorch implementation of the SwishNet architecture.
 
 [arXiv:1812.00149: SwishNet: A Fast Convolutional Neural Network for Speech, Music and Noise Classification and Segmentation](https://arxiv.org/abs/1812.00149).
 
@@ -40,9 +40,14 @@ model(mfccs)
 # Development environment
 
 ```bash
-uv sync
-uv venv --python 3.12 --clear
+uv sync --dev
 source .venv/bin/activate
+```
+
+# Tests
+
+```bash
+uv run pytest
 ```
 
 If running on WSL:

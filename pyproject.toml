@@ -3,10 +3,9 @@ name = "swishnet-pytorch"
 version = "0.1.0"
 description = ""
 readme = "README.md"
-requires-python = "==3.12.*"
+requires-python = ">=3.12"
 dependencies = [
     "torch",
-    "pytorch-triton-rocm",
 ]
 
 [dependency-groups]
@@ -15,5 +14,8 @@ dev = [
 ]
 
 [tool.uv.sources]
-torch = { url = "https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.2/torch-2.6.0%2Brocm6.4.2.git76481f7c-cp312-cp312-linux_x86_64.whl" }
-pytorch-triton-rocm = { url = "https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.2/pytorch_triton_rocm-3.2.0%2Brocm6.4.2.git7e948ebf-cp312-cp312-linux_x86_64.whl" }
+torch = [{ index = "pytorch-rocm" }]
+
+[[tool.uv.index]]
+name = "pytorch-rocm"
+url = "https://download.pytorch.org/whl/rocm7.2"
