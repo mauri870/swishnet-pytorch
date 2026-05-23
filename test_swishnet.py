@@ -1,5 +1,6 @@
 import pytest
 import torch
+import torchaudio.transforms as T
 from swishnet import CausalBlock, CausalConv1D, CausalGatedConv1D, SwishNet, SwishNetWide
 
 BATCH = 2
@@ -105,3 +106,20 @@ class TestSwishNetWide:
         model = SwishNetWide(classes=2)
         y = model(torch.randn(BATCH, IN_CHANNELS, TIME))
         assert y.shape == (BATCH, 2)
+
+
+class TestTorchaudioIntegration:
+    SAMPLE_RATE = 16000
+    N_MFCC = 20
+
+    def test_mfcc_pipeline(self):
+        # waveform shape: (channels, samples), mono, 1 second
+        waveform = torch.randn(1, self.SAMPLE_RATE)
+        transform = T.MFCC(sample_rate=self.SAMPLE_RATE, n_mfcc=self.N_MFCC)
+        # MFCC output: (channels, n_mfcc, time_frames) used as (batch, in_channels, time)
+        mfccs = transform(waveform)
+        model = SwishNet(in_channels=self.N_MFCC, out_channels=2)
+        with torch.no_grad():
+            y = model(mfccs)
+        assert y.shape == (1, 2)
+        assert torch.isfinite(y).all()
