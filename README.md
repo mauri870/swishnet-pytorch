@@ -42,18 +42,7 @@ model(mfccs)
 ```bash
 uv sync --dev
 source .venv/bin/activate
-```
 
-# Tests
-
-```bash
 uv run pytest
-```
-
-If running on WSL:
-
-```bash
-cd $(uv pip show torch | grep Location | awk -F ": " '{print $2}')/torch/lib
-rm libhsa-runtime64.so*
-cp /opt/rocm/lib/libhsa-runtime64.so.1.* libhsa-runtime64.so
+uv run python benchmark.py
 ```
